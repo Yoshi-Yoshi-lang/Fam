@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トイレットペーパー比較ツール</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>トイレットペーパー比較ツール</h1>
+    
+    <form id="inputForm">
+        <input type="text" id="productName" placeholder="商品名" required>
+        <input type="number" id="width" placeholder="幅 (mm) ＊任意" required>
+        <input type="number" id="length" placeholder="長さ (m)" required>
+        <input type="number" id="multiplier" placeholder="巻き数倍率 (例: 1, 2, 3.2)" step="0.1" required>
+        <input type="number" id="rolls" placeholder="ロール数 (例: 12)" required>
+        <input type="number" id="price" placeholder="価格 (円)" required>
+        <button type="submit">追加</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>幅 (mm)</th>
+                <th>長さ (m)</th>
+                <th>巻き数倍率</th>
+                <th>ロール数</th>
+                <th>価格 (円)</th>
+                <th>1mあたりの価格 (円)</th>
+                <th>削除</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
