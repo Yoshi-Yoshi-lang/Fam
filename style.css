@@ -1,34 +1,120 @@
+/* 基本のスタイル設定 */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 20px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-form {
+/* コンテナ */
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 1200px;
+}
+
+/* タイトル */
+h1 {
+    font-size: 2em;
+    text-align: center;
+    color: #333;
     margin-bottom: 20px;
 }
 
-input {
-    margin: 5px;
-    padding: 8px;
+/* 入力フォーム */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
 }
 
+/* 入力フィールド */
+input[type="number"], input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    width: 48%;
+    box-sizing: border-box;
+    outline: none;
+}
+
+/* 入力欄に細い黒枠を追加 */
+input[type="number"]:focus, input[type="text"]:focus {
+    border: 2px solid #000; /* フォーカス時に黒い枠線 */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* 少しだけシャドウをつけて強調 */
+}
+
+/* ボタン */
 button {
-    padding: 8px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
+button:hover {
+    background-color: #45a049;
+}
+
+/* テーブル */
 table {
-    width: 80%;
-    margin: auto;
+    width: 100%;
+    margin-top: 20px;
     border-collapse: collapse;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    text-align: center;
 }
 
 th {
-    background-color: #f4f4f4;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px;
+}
+
+/* テーブルのセルに細い黒枠を追加 */
+td {
+    padding: 12px;
+    border: 1px solid #000; /* 黒い枠線 */
+}
+
+/* 最安値のハイライト */
+tr:hover {
+    background-color: #f2f2f2;
+}
+
+tr:first-child {
+    background-color: #ffeb3b; /* 最安値 */
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    input[type="number"], input[type="text"] {
+        width: 100%;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
 }
