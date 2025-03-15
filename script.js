@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         const productName = document.getElementById("productName").value;
-        const width = document.getElementById("width").value ? parseFloat(document.getElementById("width").value) : null;
         const length = parseFloat(document.getElementById("length").value);
         const multiplier = parseFloat(document.getElementById("multiplier").value);
         const rolls = parseInt(document.getElementById("rolls").value, 10);
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         products.push({
             name: productName,
-            width: width, 
             length: length,
             multiplier: multiplier,
             rolls: rolls,
@@ -54,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             row.innerHTML = `
                 <td>${product.name}</td>
-                <td>${product.width !== null ? product.width : "-"}</td>
                 <td>${product.length}</td>
                 <td>${product.multiplier}倍</td>
                 <td>${product.rolls}</td>
