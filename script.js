@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("inputForm");
     const tableBody = document.getElementById("tableBody");
     const resetBtn = document.getElementById("resetBtn");
-    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let products = JSON.parse(localStorage.getItem("toilet-products")) || [];
 
     updateTable();
 
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function saveToLocalStorage() {
-        localStorage.setItem("products", JSON.stringify(products));
+        localStorage.setItem("toilet-products", JSON.stringify(products));
     }
 
     resetBtn.addEventListener("click", function () {
