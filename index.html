@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>日用品価格比較</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- 背景のグラデーションメッシュ -->
+    <div class="bg-mesh">
+        <div class="mesh-gradient mesh-1"></div>
+        <div class="mesh-gradient mesh-2"></div>
+        <div class="mesh-gradient mesh-3"></div>
+    </div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-icon">🧻</div>
+            <div class="header-text">
+                <h1>日用品価格比較</h1>
+                <p class="app-subtitle">どれが一番お得？</p>
+            </div>
+        </header>
+
+        <!-- カテゴリータブ -->
+        <nav class="category-tabs glass-panel">
+            <button class="tab-btn active" data-category="toilet">
+                <span class="tab-icon">🧻</span>
+                <span class="tab-label">トイレットペーパー</span>
+            </button>
+            <button class="tab-btn" data-category="tissue">
+                <span class="tab-icon">📦</span>
+                <span class="tab-label">ティッシュ</span>
+            </button>
+            <div class="tab-indicator"></div>
+        </nav>
+
+        <!-- 入力フォーム（折りたたみ式） -->
+        <div class="form-container glass-card">
+            <button type="button" class="form-toggle" id="formToggle">
+                <span class="toggle-title">＋ 新しい商品を追加</span>
+                <span class="toggle-icon" id="toggleIcon">▼</span>
+            </button>
+
+            <form id="inputForm" class="input-form collapsed">
+                <div class="form-section">
+                    <label class="form-label">商品名</label>
+                    <input type="text" id="productName" class="glass-input" placeholder="例: エリエール 消臭プラス" required>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">店舗名</label>
+                    <div class="store-input-wrapper">
+                        <input type="text" id="storeName" class="glass-input" placeholder="例: コストコ" autocomplete="off">
+                        <div class="store-suggestions glass-dropdown" id="storeSuggestions"></div>
+                    </div>
+                </div>
+
+                <!-- トイレットペーパー用フィールド -->
+                <div class="category-fields toilet-fields">
+                    <div class="form-section">
+                        <label class="form-label">巻きの長さ（m）</label>
+                        <input type="number" id="length" class="glass-input" placeholder="50" step="0.1">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">何倍巻き？</label>
+                        <div class="pill-selector" id="multiplierButtons">
+                            <button type="button" class="pill-btn" data-value="1">1倍</button>
+                            <button type="button" class="pill-btn" data-value="1.5">1.5倍</button>
+                            <button type="button" class="pill-btn active" data-value="2">2倍</button>
+                            <button type="button" class="pill-btn" data-value="3">3倍</button>
+                        </div>
+                        <input type="hidden" id="multiplier" value="2">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">ロール数</label>
+                        <div class="pill-selector" id="rollButtons">
+                            <button type="button" class="pill-btn" data-value="4">4</button>
+                            <button type="button" class="pill-btn" data-value="8">8</button>
+                            <button type="button" class="pill-btn active" data-value="12">12</button>
+                            <button type="button" class="pill-btn" data-value="18">18</button>
+                            <button type="button" class="pill-btn" data-value="24">24</button>
+                        </div>
+                        <input type="hidden" id="rolls" value="12">
+                    </div>
+                </div>
+
+                <!-- ティッシュ用フィールド -->
+                <div class="category-fields tissue-fields hidden">
+                    <div class="form-section">
+                        <label class="form-label">1箱あたりの枚数</label>
+                        <div class="pill-selector" id="sheetsButtons">
+                            <button type="button" class="pill-btn" data-value="150">150枚</button>
+                            <button type="button" class="pill-btn active" data-value="200">200枚</button>
+                            <button type="button" class="pill-btn" data-value="360">360枚</button>
+                            <button type="button" class="pill-btn" data-value="400">400枚</button>
+                        </div>
+                        <input type="hidden" id="sheetsPerBox" value="200">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">箱数</label>
+                        <div class="pill-selector" id="boxButtons">
+                            <button type="button" class="pill-btn" data-value="3">3箱</button>
+                            <button type="button" class="pill-btn active" data-value="5">5箱</button>
+                            <button type="button" class="pill-btn" data-value="10">10箱</button>
+                            <button type="button" class="pill-btn" data-value="12">12箱</button>
+                        </div>
+                        <input type="hidden" id="boxes" value="5">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">価格（円）</label>
+                    <div class="price-input-wrapper">
+                        <span class="price-symbol">¥</span>
+                        <input type="number" id="price" class="glass-input price-input" placeholder="498" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">メモ（任意）</label>
+                    <input type="text" id="memo" class="glass-input" placeholder="例: 週末セール">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">追加</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 結果セクション -->
+        <section class="results-section">
+            <div class="results-header">
+                <h2>比較結果</h2>
+                <span class="product-count glass-badge" id="productCount"></span>
+            </div>
+
+            <div class="results-cards" id="resultsCards"></div>
+
+            <div class="empty-state glass-card" id="emptyState">
+                <div class="empty-icon">🛒</div>
+                <p class="empty-title">まだ商品がありません</p>
+                <p class="empty-subtitle">上のフォームから商品を追加してください</p>
+            </div>
+        </section>
+
+        <!-- アクションボタン -->
+        <div class="action-bar glass-panel">
+            <button id="resetBtn" class="action-btn danger">
+                <span>全て削除</span>
+            </button>
+        </div>
+
+        <!-- トースト通知 -->
+        <div class="toast glass-toast" id="toast">
+            <span class="toast-message" id="toastMessage">追加しました</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
