@@ -19,6 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const formToggle = document.getElementById("formToggle");
     const toggleIcon = document.getElementById("toggleIcon");
 
+    // Custom modal elements
+    const customModal = document.getElementById("customModal");
+    const customInput = document.getElementById("customInput");
+    const modalTitle = document.getElementById("modalTitle");
+    let currentCustomTarget = null;
+
     // Current category
     let currentCategory = "toilet";
 
@@ -41,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initPillSelectors();
     initStoreSuggestions();
     initFormToggle();
+    initCustomModal();
 
     // ===== Form Toggle =====
     function initFormToggle() {
@@ -64,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectors = [
             { container: "#multiplierButtons", input: "#multiplier" },
             { container: "#rollButtons", input: "#rolls" },
-            { container: "#sheetsButtons", input: "#sheetsPerBox" },
+            { container: "#pairsButtons", input: "#pairsPerBox" },
             { container: "#boxButtons", input: "#boxes" }
         ];
 
@@ -82,6 +89,91 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         });
+    }
+
+    // ===== Custom Modal =====
+    function initCustomModal() {
+        // カスタムボタンのクリックイベント
+        document.querySelectorAll(".custom-btn").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                currentCustomTarget = this.dataset.custom;
+
+                const titles = {
+                    multiplier: "何倍巻き？（カスタム）",
+                    rolls: "ロール数（カスタム）",
+                    pairsPerBox: "組数（カスタム）",
+                    boxes: "箱数（カスタム）"
+                };
+
+                modalTitle.textContent = titles[currentCustomTarget] || "カスタム値";
+                customInput.value = "";
+                customInput.placeholder = "値を入力";
+
+                customModal.classList.add("show");
+                setTimeout(() => customInput.focus(), 100);
+            });
+        });
+
+        // モーダル閉じるボタン
+        document.getElementById("modalClose").addEventListener("click", closeModal);
+        document.getElementById("modalCancel").addEventListener("click", closeModal);
+
+        // 確定ボタン
+        document.getElementById("modalConfirm").addEventListener("click", function () {
+            const value = parseFloat(customInput.value);
+            if (!value || value <= 0) {
+                customInput.classList.add("error");
+                return;
+            }
+
+            // 対応するhidden inputに値をセット
+            const inputEl = document.getElementById(currentCustomTarget);
+            if (inputEl) {
+                inputEl.value = value;
+            }
+
+            // ボタンの選択状態を更新
+            const containerMap = {
+                multiplier: "#multiplierButtons",
+                rolls: "#rollButtons",
+                pairsPerBox: "#pairsButtons",
+                boxes: "#boxButtons"
+            };
+
+            const container = document.querySelector(containerMap[currentCustomTarget]);
+            if (container) {
+                container.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));
+                const customBtn = container.querySelector(".custom-btn");
+                if (customBtn) {
+                    customBtn.classList.add("active");
+                    customBtn.textContent = value % 1 === 0 ? value.toString() : value.toFixed(1);
+                }
+            }
+
+            closeModal();
+            showToast(`${value} に設定しました`);
+        });
+
+        // オーバーレイクリックで閉じる
+        customModal.addEventListener("click", function (e) {
+            if (e.target === customModal) {
+                closeModal();
+            }
+        });
+
+        // Enterキーで確定
+        customInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                document.getElementById("modalConfirm").click();
+            }
+        });
+    }
+
+    function closeModal() {
+        customModal.classList.remove("show");
+        customInput.classList.remove("error");
+        currentCustomTarget = null;
     }
 
     // ===== Store Suggestions =====
@@ -198,19 +290,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 unit: "m"
             };
         } else if (currentCategory === "tissue") {
-            const sheetsPerBox = parseInt(document.getElementById("sheetsPerBox").value, 10) || 0;
+            const pairsPerBox = parseInt(document.getElementById("pairsPerBox").value, 10) || 0;
             const boxes = parseInt(document.getElementById("boxes").value, 10) || 0;
 
-            const totalSheets = sheetsPerBox * boxes;
-            const pricePerUnit = price / totalSheets;
+            const totalPairs = pairsPerBox * boxes;
+            const pricePerUnit = price / totalPairs;
 
             product = {
                 ...product,
-                sheetsPerBox,
+                pairsPerBox,
                 boxes,
-                totalAmount: totalSheets,
+                totalAmount: totalPairs,
                 pricePerUnit: parseFloat(pricePerUnit.toFixed(3)),
-                unit: "枚"
+                unit: "組"
             };
         }
 
@@ -343,7 +435,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
                 <div class="stat-chip">
                     <span class="stat-label">1箱</span>
-                    <span class="stat-value">${product.sheetsPerBox}枚</span>
+                    <span class="stat-value">${product.pairsPerBox || product.sheetsPerBox}組</span>
                 </div>
                 <div class="stat-chip">
                     <span class="stat-label">箱数</span>

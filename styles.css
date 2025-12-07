@@ -841,3 +841,129 @@ body {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* === Custom Button === */
+.pill-btn.custom-btn {
+    flex: 0 0 auto;
+    min-width: 40px;
+    max-width: 40px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.pill-btn.custom-btn.active {
+    background: var(--accent-purple);
+    border-color: var(--accent-purple);
+}
+
+/* === Custom Modal === */
+.custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.custom-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-modal {
+    width: calc(100% - 48px);
+    max-width: 320px;
+    padding: 0;
+    transform: scale(0.9);
+    transition: transform var(--spring);
+}
+
+.custom-modal-overlay.show .custom-modal {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.modal-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.modal-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 18px;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.modal-close:active {
+    background: var(--gray-200);
+}
+
+.modal-body {
+    padding: var(--space-lg);
+}
+
+.modal-body .glass-input {
+    font-size: var(--font-size-xl);
+    text-align: center;
+    font-weight: 600;
+}
+
+.modal-footer {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    padding-top: 0;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 12px var(--space-md);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.modal-btn.cancel {
+    background: var(--gray-100);
+    color: var(--gray-500);
+}
+
+.modal-btn.cancel:active {
+    background: var(--gray-200);
+}
+
+.modal-btn.confirm {
+    background: var(--accent-blue);
+    color: var(--white);
+}
+
+.modal-btn.confirm:active {
+    opacity: 0.85;
+}

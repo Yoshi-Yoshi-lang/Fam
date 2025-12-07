@@ -75,12 +75,13 @@
                     <div class="form-section">
                         <label class="form-label">何倍巻き？</label>
                         <div class="pill-selector" id="multiplierButtons">
-                            <button type="button" class="pill-btn" data-value="1">1倍</button>
-                            <button type="button" class="pill-btn" data-value="1.5">1.5倍</button>
-                            <button type="button" class="pill-btn active" data-value="2">2倍</button>
-                            <button type="button" class="pill-btn" data-value="3">3倍</button>
+                            <button type="button" class="pill-btn active" data-value="1">1x</button>
+                            <button type="button" class="pill-btn" data-value="2">2x</button>
+                            <button type="button" class="pill-btn" data-value="3">3x</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="multiplier"
+                                title="カスタム値">⚙️</button>
                         </div>
-                        <input type="hidden" id="multiplier" value="2">
+                        <input type="hidden" id="multiplier" value="1">
                     </div>
 
                     <div class="form-section">
@@ -89,8 +90,9 @@
                             <button type="button" class="pill-btn" data-value="4">4</button>
                             <button type="button" class="pill-btn" data-value="8">8</button>
                             <button type="button" class="pill-btn active" data-value="12">12</button>
-                            <button type="button" class="pill-btn" data-value="18">18</button>
-                            <button type="button" class="pill-btn" data-value="24">24</button>
+                            <button type="button" class="pill-btn" data-value="16">16</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="rolls"
+                                title="カスタム値">⚙️</button>
                         </div>
                         <input type="hidden" id="rolls" value="12">
                     </div>
@@ -99,23 +101,30 @@
                 <!-- ティッシュ用フィールド -->
                 <div class="category-fields tissue-fields hidden">
                     <div class="form-section">
-                        <label class="form-label">1箱あたりの枚数</label>
-                        <div class="pill-selector" id="sheetsButtons">
-                            <button type="button" class="pill-btn" data-value="150">150枚</button>
-                            <button type="button" class="pill-btn active" data-value="200">200枚</button>
-                            <button type="button" class="pill-btn" data-value="360">360枚</button>
-                            <button type="button" class="pill-btn" data-value="400">400枚</button>
+                        <label class="form-label">1箱あたりの組数</label>
+                        <div class="pill-selector" id="pairsButtons">
+                            <button type="button" class="pill-btn" data-value="100">100</button>
+                            <button type="button" class="pill-btn" data-value="120">120</button>
+                            <button type="button" class="pill-btn active" data-value="150">150</button>
+                            <button type="button" class="pill-btn" data-value="180">180</button>
+                            <button type="button" class="pill-btn" data-value="200">200</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="pairsPerBox"
+                                title="カスタム値">⚙️</button>
                         </div>
-                        <input type="hidden" id="sheetsPerBox" value="200">
+                        <input type="hidden" id="pairsPerBox" value="150">
                     </div>
 
                     <div class="form-section">
                         <label class="form-label">箱数</label>
                         <div class="pill-selector" id="boxButtons">
-                            <button type="button" class="pill-btn" data-value="3">3箱</button>
-                            <button type="button" class="pill-btn active" data-value="5">5箱</button>
-                            <button type="button" class="pill-btn" data-value="10">10箱</button>
-                            <button type="button" class="pill-btn" data-value="12">12箱</button>
+                            <button type="button" class="pill-btn" data-value="3">3</button>
+                            <button type="button" class="pill-btn" data-value="4">4</button>
+                            <button type="button" class="pill-btn active" data-value="5">5</button>
+                            <button type="button" class="pill-btn" data-value="6">6</button>
+                            <button type="button" class="pill-btn" data-value="10">10</button>
+                            <button type="button" class="pill-btn" data-value="12">12</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="boxes"
+                                title="カスタム値">⚙️</button>
                         </div>
                         <input type="hidden" id="boxes" value="5">
                     </div>
@@ -166,6 +175,23 @@
         <!-- トースト通知 -->
         <div class="toast glass-toast" id="toast">
             <span class="toast-message" id="toastMessage">追加しました</span>
+        </div>
+
+        <!-- カスタム値入力モーダル -->
+        <div class="custom-modal-overlay" id="customModal">
+            <div class="custom-modal glass-card">
+                <div class="modal-header">
+                    <span class="modal-title" id="modalTitle">カスタム値</span>
+                    <button type="button" class="modal-close" id="modalClose">×</button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" class="glass-input" id="customInput" placeholder="値を入力">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn cancel" id="modalCancel">キャンセル</button>
+                    <button type="button" class="modal-btn confirm" id="modalConfirm">設定</button>
+                </div>
+            </div>
         </div>
     </div>
 
