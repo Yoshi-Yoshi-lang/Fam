@@ -158,7 +158,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Check for redirect result (for returning from login)
     try {
-        await getRedirectResult(auth);
+        if (getRedirectResult) {
+            await getRedirectResult(auth);
+        }
     } catch (e) {
         console.error('Redirect result error:', e);
     }
