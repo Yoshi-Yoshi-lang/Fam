@@ -1047,3 +1047,4 @@ async function clearProductsByCategoryFromFirestore(category) {
         }
     });
     };
+
