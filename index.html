@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="価格比較">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>日用品価格比較</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvGxedUJRIxRzPmlbnZ07RZ_QCRHK9-Yc",
+            authDomain: "nichiyou-87c1f.firebaseapp.com",
+            projectId: "nichiyou-87c1f",
+            storageBucket: "nichiyou-87c1f.firebasestorage.app",
+            messagingSenderId: "1017926711526",
+            appId: "1:1017926711526:web:ab8f8d03012c7a43fba327"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        
+        // Export to window for use in script.js
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseProvider = provider;
+        window.firebaseFunctions = {
+            signInWithPopup,
+            signOut,
+            onAuthStateChanged,
+            collection,
+            doc,
+            getDocs,
+            addDoc,
+            deleteDoc,
+            query,
+            where,
+            writeBatch
+        };
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
+</head>
+
+<body>
+    <!-- 背景のグラデーションメッシュ -->
+    <div class="bg-mesh">
+        <div class="mesh-gradient mesh-1"></div>
+        <div class="mesh-gradient mesh-2"></div>
+        <div class="mesh-gradient mesh-3"></div>
+    </div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-icon">🧻</div>
+            <div class="header-text">
+                <h1>日用品価格比較</h1>
+                <p class="app-subtitle">どれが一番お得？</p>
+            </div>
+            <div class="auth-section" id="authSection">
+                <button class="auth-btn login-btn" id="loginBtn" style="display: none;">
+                    <span>ログイン</span>
+                </button>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <img class="user-avatar" id="userAvatar" src="" alt="">
+                    <button class="auth-btn logout-btn" id="logoutBtn">ログアウト</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ログイン画面オーバーレイ -->
+        <div class="login-overlay" id="loginOverlay">
+            <div class="login-card glass-card">
+                <div class="login-icon">🧻</div>
+                <h2>日用品価格比較</h2>
+                <p>Googleアカウントでログインして、<br>データをクラウドに保存しましょう</p>
+                <button class="google-login-btn" id="googleLoginBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+                    <span>Googleでログイン</span>
+                </button>
+                <p class="login-note">※ログイン情報は安全に保護されます</p>
+            </div>
+        </div>
+
+        <!-- カテゴリータブ -->
+        <nav class="category-tabs glass-panel">
+            <button class="tab-btn active" data-category="toilet">
+                <span class="tab-icon">🧻</span>
+                <span class="tab-label">トイレットペーパー</span>
+            </button>
+            <button class="tab-btn" data-category="tissue">
+                <span class="tab-icon">📦</span>
+                <span class="tab-label">ティッシュ</span>
+            </button>
+            <div class="tab-indicator"></div>
+        </nav>
+
+        <!-- 入力フォーム（折りたたみ式） -->
+        <div class="form-container glass-card">
+            <button type="button" class="form-toggle" id="formToggle">
+                <span class="toggle-title">＋ 新しい商品を追加</span>
+                <span class="toggle-icon" id="toggleIcon">▼</span>
+            </button>
+
+            <form id="inputForm" class="input-form collapsed">
+                <div class="form-section">
+                    <label class="form-label">商品名</label>
+                    <input type="text" id="productName" class="glass-input" placeholder="例: エリエール 消臭プラス" required>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">店舗名</label>
+                    <div class="store-input-wrapper">
+                        <input type="text" id="storeName" class="glass-input" placeholder="例: コストコ" autocomplete="off">
+                        <div class="store-suggestions glass-dropdown" id="storeSuggestions"></div>
+                    </div>
+                </div>
+
+                <!-- トイレットペーパー用フィールド -->
+                <div class="category-fields toilet-fields">
+                    <div class="form-section">
+                        <label class="form-label">巻きの長さ（m）</label>
+                        <input type="number" id="length" class="glass-input" placeholder="50" step="0.1">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">何倍巻き？</label>
+                        <div class="pill-selector" id="multiplierButtons">
+                            <button type="button" class="pill-btn active" data-value="1">1x</button>
+                            <button type="button" class="pill-btn" data-value="2">2x</button>
+                            <button type="button" class="pill-btn" data-value="3">3x</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="multiplier"
+                                title="カスタム値">⚙️</button>
+                        </div>
+                        <input type="hidden" id="multiplier" value="1">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">ロール数</label>
+                        <div class="pill-selector" id="rollButtons">
+                            <button type="button" class="pill-btn" data-value="4">4</button>
+                            <button type="button" class="pill-btn" data-value="8">8</button>
+                            <button type="button" class="pill-btn active" data-value="12">12</button>
+                            <button type="button" class="pill-btn" data-value="16">16</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="rolls"
+                                title="カスタム値">⚙️</button>
+                        </div>
+                        <input type="hidden" id="rolls" value="12">
+                    </div>
+                </div>
+
+                <!-- ティッシュ用フィールド -->
+                <div class="category-fields tissue-fields hidden">
+                    <div class="form-section">
+                        <label class="form-label">1箱あたりの組数</label>
+                        <div class="pill-selector" id="pairsButtons">
+                            <button type="button" class="pill-btn" data-value="100">100</button>
+                            <button type="button" class="pill-btn" data-value="120">120</button>
+                            <button type="button" class="pill-btn active" data-value="150">150</button>
+                            <button type="button" class="pill-btn" data-value="180">180</button>
+                            <button type="button" class="pill-btn" data-value="200">200</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="pairsPerBox"
+                                title="カスタム値">⚙️</button>
+                        </div>
+                        <input type="hidden" id="pairsPerBox" value="150">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">箱数</label>
+                        <div class="pill-selector" id="boxButtons">
+                            <button type="button" class="pill-btn" data-value="3">3</button>
+                            <button type="button" class="pill-btn" data-value="4">4</button>
+                            <button type="button" class="pill-btn active" data-value="5">5</button>
+                            <button type="button" class="pill-btn" data-value="6">6</button>
+                            <button type="button" class="pill-btn" data-value="10">10</button>
+                            <button type="button" class="pill-btn" data-value="12">12</button>
+                            <button type="button" class="pill-btn custom-btn" data-custom="boxes"
+                                title="カスタム値">⚙️</button>
+                        </div>
+                        <input type="hidden" id="boxes" value="5">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">価格（円）</label>
+                    <div class="price-input-wrapper">
+                        <span class="price-symbol">¥</span>
+                        <input type="number" id="price" class="glass-input price-input" placeholder="498" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">メモ（任意）</label>
+                    <input type="text" id="memo" class="glass-input" placeholder="例: 週末セール">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">追加</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 結果セクション -->
+        <section class="results-section">
+            <div class="results-header">
+                <h2>比較結果</h2>
+                <span class="product-count glass-badge" id="productCount"></span>
+            </div>
+
+            <div class="results-cards" id="resultsCards"></div>
+
+            <div class="empty-state glass-card" id="emptyState">
+                <div class="empty-icon">🛒</div>
+                <p class="empty-title">まだ商品がありません</p>
+                <p class="empty-subtitle">上のフォームから商品を追加してください</p>
+            </div>
+        </section>
+
+        <!-- アクションボタン -->
+        <div class="action-bar glass-panel">
+            <button id="resetBtn" class="action-btn danger">
+                <span>全て削除</span>
+            </button>
+        </div>
+
+        <!-- トースト通知 -->
+        <div class="toast glass-toast" id="toast">
+            <span class="toast-message" id="toastMessage">追加しました</span>
+        </div>
+
+        <!-- カスタム値入力モーダル -->
+        <div class="custom-modal-overlay" id="customModal">
+            <div class="custom-modal glass-card">
+                <div class="modal-header">
+                    <span class="modal-title" id="modalTitle">カスタム値</span>
+                    <button type="button" class="modal-close" id="modalClose">×</button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" class="glass-input" id="customInput" placeholder="値を入力">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn cancel" id="modalCancel">キャンセル</button>
+                    <button type="button" class="modal-btn confirm" id="modalConfirm">設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

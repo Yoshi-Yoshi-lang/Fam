@@ -1,0 +1,24 @@
+{
+    "name": "日用品価格比較",
+    "short_name": "価格比較",
+    "description": "トイレットペーパーやティッシュの価格を比較して最安値を見つけよう",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
