@@ -747,7 +747,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <div class="card-store">${escapeHtml(product.store) || '店舗未設定'}</div>
                             ${dateStr ? `<div class="card-date">${dateStr}</div>` : ''}
                         </div>
-                        <button class="delete-btn" data-id="${product.id}">×</button>
+                        <div class="header-actions">
+                            <button class="icon-btn edit-btn" data-id="${product.id}" title="編集">✏️</button>
+                            <button class="icon-btn delete-btn" data-id="${product.id}" title="削除">×</button>
+                        </div>
                     </div>
                     <div class="card-stats">
                         ${stats}
@@ -757,9 +760,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <span class="unit-price-unit">円/${product.unit || 'm'}</span>
                     </div>
                     ${product.memo ? `<div class="card-memo">📝 ${escapeHtml(product.memo)}</div>` : ''}
-                    <div class="card-actions">
-                        <button class="edit-btn" data-id="${product.id}">✏️ 編集</button>
-                    </div>
                 </div>
             `;
         }).join("");
@@ -873,14 +873,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // ===== Edit Modal =====
-    const editModal = document.getElementById("editModal");
-    const editModalClose = document.getElementById("editModalClose");
-    const editModalCancel = document.getElementById("editModalCancel");
-    const editModalSave = document.getElementById("editModalSave");
-    
+    // Initialize elements lazily to avoid null errors if DOM isn't ready
+    function getEditElements() {
+        return {
+            modal: document.getElementById("editModal"),
+            closeBtn: document.getElementById("editModalClose"),
+            cancelBtn: document.getElementById("editModalCancel"),
+            saveBtn: document.getElementById("editModalSave")
+        };
+    }
+
     function openEditModal(product) {
-        if (!editModal) {
-            showToast("編集機能を読み込み中...");
+        const { modal } = getEditElements();
+        if (!modal) {
+            console.error("Edit modal element not found");
+            showToast("編集機能のエラー: モーダルが見つかりません");
             return;
         }
         
@@ -923,30 +930,34 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (editBoxes) editBoxes.value = product.boxes || '';
         }
         
-        editModal.classList.add("show");
+        modal.classList.add("show");
     }
     
     function closeEditModal() {
-        if (editModal) editModal.classList.remove("show");
+        const { modal } = getEditElements();
+        if (modal) modal.classList.remove("show");
     }
     
-    if (editModalClose) editModalClose.addEventListener("click", closeEditModal);
-    if (editModalCancel) editModalCancel.addEventListener("click", closeEditModal);
-    if (editModal) {
-        editModal.addEventListener("click", function(e) {
-            if (e.target === editModal) {
+    // Attach event listeners using delegation or check existence
+    const editEls = getEditElements();
+    if (editEls.closeBtn) editEls.closeBtn.addEventListener("click", closeEditModal);
+    if (editEls.cancelBtn) editEls.cancelBtn.addEventListener("click", closeEditModal);
+    if (editEls.modal) {
+        editEls.modal.addEventListener("click", function(e) {
+            if (e.target === editEls.modal) {
                 closeEditModal();
             }
         });
     }
     
-    if (editModalSave) editModalSave.addEventListener("click", async function() {
-        const productId = document.getElementById("editProductId").value;
-        const category = document.getElementById("editProductCategory").value;
-        
-        const name = document.getElementById("editProductName").value.trim();
-        const store = document.getElementById("editStoreName").value.trim();
-        const price = parseFloat(document.getElementById("editPrice").value);
+    if (editEls.saveBtn) {
+        editEls.saveBtn.addEventListener("click", async function() {
+            const productId = document.getElementById("editProductId").value;
+            const category = document.getElementById("editProductCategory").value;
+            
+            const name = document.getElementById("editProductName").value.trim();
+            const store = document.getElementById("editStoreName").value.trim();
+            const price = parseFloat(document.getElementById("editPrice").value);
         const memo = document.getElementById("editMemo").value.trim();
         
         if (!name || !price) {
@@ -1012,4 +1023,5 @@ document.addEventListener("DOMContentLoaded", async function () {
             showToast("更新に失敗しました");
         }
     });
+    }
 });
