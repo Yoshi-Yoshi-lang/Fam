@@ -1128,3 +1128,68 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* === Card Actions === */
+.card-actions {
+    margin-top: var(--space-md);
+    display: flex;
+    justify-content: center;
+}
+
+.edit-btn {
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(0, 122, 255, 0.1);
+    border: 1px solid rgba(0, 122, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--accent-blue);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.edit-btn:active {
+    background: var(--accent-blue);
+    color: var(--white);
+}
+
+/* === Edit Modal === */
+.edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+}
+
+.edit-modal-overlay.show {
+    display: flex;
+    animation: fadeIn var(--transition-fast);
+}
+
+.edit-modal {
+    width: 100%;
+    max-width: 400px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp var(--transition-base);
+}
+
+.edit-modal-body {
+    padding: var(--space-md);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.edit-modal .form-section {
+    margin-bottom: var(--space-md);
+}
+
+.edit-modal .form-section:last-child {
+    margin-bottom: 0;
+}
