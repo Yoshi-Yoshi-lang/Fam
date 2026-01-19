@@ -1129,28 +1129,49 @@ body {
 }
 
 /* === Card Actions === */
-.card-actions {
-    margin-top: var(--space-md);
+.header-actions {
     display: flex;
-    justify-content: center;
+    gap: var(--space-xs);
+    align-items: center;
 }
 
-.edit-btn {
-    padding: var(--space-sm) var(--space-md);
-    background: rgba(0, 122, 255, 0.1);
-    border: 1px solid rgba(0, 122, 255, 0.2);
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
     border-radius: var(--radius-full);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--accent-blue);
+    font-size: var(--font-size-base);
     cursor: pointer;
     transition: all var(--transition-fast);
     -webkit-tap-highlight-color: transparent;
 }
 
+.icon-btn:active {
+    transform: scale(0.9);
+}
+
+.edit-btn {
+    color: var(--accent-blue);
+    background: rgba(0, 122, 255, 0.1);
+}
+
 .edit-btn:active {
     background: var(--accent-blue);
     color: var(--white);
+}
+
+.delete-btn {
+    color: var(--gray-400);
+    background: transparent;
+}
+
+.delete-btn:active {
+    color: var(--ui-danger);
+    background: rgba(255, 59, 48, 0.1);
 }
 
 /* === Edit Modal === */
