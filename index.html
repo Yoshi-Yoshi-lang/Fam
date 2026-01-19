@@ -19,8 +19,8 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-        import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, setDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyAvGxedUJRIxRzPmlbnZ07RZ_QCRHK9-Yc",
@@ -41,7 +41,8 @@
         window.firebaseDb = db;
         window.firebaseProvider = provider;
         window.firebaseFunctions = {
-            signInWithPopup,
+            signInWithRedirect,
+            getRedirectResult,
             signOut,
             onAuthStateChanged,
             collection,
@@ -49,6 +50,7 @@
             getDocs,
             addDoc,
             deleteDoc,
+            setDoc,
             query,
             where,
             writeBatch
@@ -269,9 +271,75 @@
                 </div>
             </div>
         </div>
+
+        <!-- 商品編集モーダル -->
+        <div class="edit-modal-overlay" id="editModal">
+            <div class="edit-modal glass-card">
+                <div class="modal-header">
+                    <span class="modal-title">商品を編集</span>
+                    <button type="button" class="modal-close" id="editModalClose">×</button>
+                </div>
+                <div class="modal-body edit-modal-body">
+                    <input type="hidden" id="editProductId">
+                    <input type="hidden" id="editProductCategory">
+                    
+                    <div class="form-section">
+                        <label class="form-label">商品名</label>
+                        <input type="text" id="editProductName" class="glass-input" required>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label class="form-label">店舗名</label>
+                        <input type="text" id="editStoreName" class="glass-input">
+                    </div>
+                    
+                    <div class="form-section">
+                        <label class="form-label">価格（円）</label>
+                        <input type="number" id="editPrice" class="glass-input" required>
+                    </div>
+                    
+                    <!-- トイレットペーパー用 -->
+                    <div id="editToiletFields">
+                        <div class="form-section">
+                            <label class="form-label">長さ（m）</label>
+                            <input type="number" id="editLength" class="glass-input" step="0.1">
+                        </div>
+                        <div class="form-section">
+                            <label class="form-label">何倍巻き</label>
+                            <input type="number" id="editMultiplier" class="glass-input" step="0.1">
+                        </div>
+                        <div class="form-section">
+                            <label class="form-label">ロール数</label>
+                            <input type="number" id="editRolls" class="glass-input">
+                        </div>
+                    </div>
+                    
+                    <!-- ティッシュ用 -->
+                    <div id="editTissueFields" style="display: none;">
+                        <div class="form-section">
+                            <label class="form-label">1箱あたりの組数</label>
+                            <input type="number" id="editPairsPerBox" class="glass-input">
+                        </div>
+                        <div class="form-section">
+                            <label class="form-label">箱数</label>
+                            <input type="number" id="editBoxes" class="glass-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label class="form-label">メモ</label>
+                        <input type="text" id="editMemo" class="glass-input">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn cancel" id="editModalCancel">キャンセル</button>
+                    <button type="button" class="modal-btn confirm" id="editModalSave">保存</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 
 </html>
