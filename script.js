@@ -124,6 +124,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const userInfo = document.getElementById("userInfo");
     const userAvatar = document.getElementById("userAvatar");
     const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const authLoading = document.getElementById("authLoading");
+    const authLoginForm = document.getElementById("authLoginForm");
 
     // Current category
     let currentCategory = "toilet";
@@ -131,6 +133,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ===== Authentication =====
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
+        
+        // Hide loading, show appropriate state
+        if (authLoading) authLoading.style.display = "none";
         
         if (user) {
             // User is signed in
@@ -140,15 +145,24 @@ document.addEventListener("DOMContentLoaded", async function () {
             userAvatar.src = user.photoURL || "";
             
             // Load products from Firestore
-            products = await loadProductsFromFirestore();
+            try {
+                products = await loadProductsFromFirestore();
+            } catch (e) {
+                console.error('Failed to load products:', e);
+                products = [];
+            }
             
-            // Check for old local data and migrate
-            await checkAndMigrateLocalData();
+            // Check for old local data and migrate (with delay for UI)
+            setTimeout(async () => {
+                await checkAndMigrateLocalData();
+                updateResults();
+            }, 500);
             
             updateResults();
             showToast(`ようこそ、${user.displayName || 'ユーザー'}さん`);
         } else {
-            // User is signed out
+            // User is signed out - show login form
+            if (authLoginForm) authLoginForm.style.display = "block";
             loginOverlay.classList.remove("hidden");
             loginBtn.style.display = "block";
             userInfo.style.display = "none";
