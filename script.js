@@ -147,6 +147,50 @@ async function clearProductsByCategoryFromFirestore(category) {
     }
 }
 
+// ===== Main Application =====
+document.addEventListener("DOMContentLoaded", async function () {
+    // Wait for Firebase
+    await waitForFirebase();
+    
+    // DOM Elements - Initialize immediately
+    const form = document.getElementById("inputForm");
+    const resultsCards = document.getElementById("resultsCards");
+    const resetBtn = document.getElementById("resetBtn");
+    const emptyState = document.getElementById("emptyState");
+    const productCount = document.getElementById("productCount");
+    const categoryTabs = document.querySelectorAll(".category-tab");
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toastMessage");
+    const storeInput = document.getElementById("storeName");
+    const storeSuggestions = document.getElementById("storeSuggestions");
+
+    // Category fields
+    const toiletFields = document.getElementById("toiletFields");
+    const tissueFields = document.getElementById("tissueFields");
+
+    // Form toggle elements
+    const formToggle = document.getElementById("formToggle");
+    
+    // Custom modal elements
+    const customModal = document.getElementById("customModal");
+    const customInput = document.getElementById("customInput");
+    const modalTitle = document.getElementById("modalTitle");
+    let currentCustomTarget = null;
+
+    // Auth elements
+    const loginOverlay = document.getElementById("loginOverlay");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userInfo = document.getElementById("userInfo");
+    const userAvatar = document.getElementById("userAvatar");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const authLoading = document.getElementById("authLoading");
+    const authLoginForm = document.getElementById("authLoginForm");
+
+    const auth = window.firebaseAuth;
+    const provider = window.firebaseProvider;
+    const { signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } = window.firebaseFunctions;
+
     // Check for redirect result (for returning from login)
     try {
         const isRedirecting = sessionStorage.getItem('authRedirecting');
@@ -1047,5 +1091,4 @@ async function clearProductsByCategoryFromFirestore(category) {
         }
     });
     };
-    });
-};
+});
