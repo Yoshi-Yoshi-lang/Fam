@@ -36,9 +36,17 @@ async function saveProductToFirestore(product) {
     const { collection, addDoc } = window.firebaseFunctions;
     const db = window.firebaseDb;
     
+    // Remove undefined values (Firestore doesn't accept undefined)
+    const cleanProduct = {};
+    for (const [key, value] of Object.entries(product)) {
+        if (value !== undefined) {
+            cleanProduct[key] = value;
+        }
+    }
+    
     try {
         const productsRef = collection(db, 'users', currentUser.uid, 'products');
-        const docRef = await addDoc(productsRef, product);
+        const docRef = await addDoc(productsRef, cleanProduct);
         return docRef.id;
     } catch (e) {
         console.error('Failed to save product:', e);
