@@ -101,6 +101,31 @@ async function deleteProductFromFirestore(productId) {
     }
 }
 
+async function updateProductInFirestore(productId, productData) {
+    if (!currentUser) return;
+    
+    const { doc } = window.firebaseFunctions;
+    const db = window.firebaseDb;
+    
+    // Remove undefined values
+    const cleanProduct = {};
+    for (const [key, value] of Object.entries(productData)) {
+        if (value !== undefined && key !== 'id') {
+            cleanProduct[key] = value;
+        }
+    }
+    
+    try {
+        const productRef = doc(db, 'users', currentUser.uid, 'products', productId);
+        // Use setDoc with merge option
+        const { setDoc } = window.firebaseFunctions;
+        await setDoc(productRef, cleanProduct);
+    } catch (e) {
+        console.error('Failed to update product:', e);
+        throw e;
+    }
+}
+
 async function clearProductsByCategoryFromFirestore(category) {
     if (!currentUser) return;
     
@@ -723,6 +748,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <span class="unit-price-unit">円/${product.unit || 'm'}</span>
                     </div>
                     ${product.memo ? `<div class="card-memo">📝 ${escapeHtml(product.memo)}</div>` : ''}
+                    <div class="card-actions">
+                        <button class="edit-btn" data-id="${product.id}">✏️ 編集</button>
+                    </div>
                 </div>
             `;
         }).join("");
@@ -740,6 +768,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                     } catch (e) {
                         showToast("削除に失敗しました");
                     }
+                }
+            });
+        });
+
+        // Edit button events
+        document.querySelectorAll(".edit-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+                const productId = this.getAttribute("data-id");
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    openEditModal(product);
                 }
             });
         });
@@ -821,6 +860,128 @@ document.addEventListener("DOMContentLoaded", async function () {
             } catch (e) {
                 showToast("削除に失敗しました");
             }
+        }
+    });
+
+    // ===== Edit Modal =====
+    const editModal = document.getElementById("editModal");
+    const editModalClose = document.getElementById("editModalClose");
+    const editModalCancel = document.getElementById("editModalCancel");
+    const editModalSave = document.getElementById("editModalSave");
+    
+    function openEditModal(product) {
+        // Set hidden fields
+        document.getElementById("editProductId").value = product.id;
+        document.getElementById("editProductCategory").value = product.category;
+        
+        // Set common fields
+        document.getElementById("editProductName").value = product.name || '';
+        document.getElementById("editStoreName").value = product.store || '';
+        document.getElementById("editPrice").value = product.price || '';
+        document.getElementById("editMemo").value = product.memo || '';
+        
+        // Show/hide category-specific fields
+        const editToiletFields = document.getElementById("editToiletFields");
+        const editTissueFields = document.getElementById("editTissueFields");
+        
+        if (product.category === "toilet") {
+            editToiletFields.style.display = "block";
+            editTissueFields.style.display = "none";
+            document.getElementById("editLength").value = product.length || '';
+            document.getElementById("editMultiplier").value = product.multiplier || '';
+            document.getElementById("editRolls").value = product.rolls || '';
+        } else if (product.category === "tissue") {
+            editToiletFields.style.display = "none";
+            editTissueFields.style.display = "block";
+            document.getElementById("editPairsPerBox").value = product.pairsPerBox || '';
+            document.getElementById("editBoxes").value = product.boxes || '';
+        }
+        
+        editModal.classList.add("show");
+    }
+    
+    function closeEditModal() {
+        editModal.classList.remove("show");
+    }
+    
+    editModalClose.addEventListener("click", closeEditModal);
+    editModalCancel.addEventListener("click", closeEditModal);
+    editModal.addEventListener("click", function(e) {
+        if (e.target === editModal) {
+            closeEditModal();
+        }
+    });
+    
+    editModalSave.addEventListener("click", async function() {
+        const productId = document.getElementById("editProductId").value;
+        const category = document.getElementById("editProductCategory").value;
+        
+        const name = document.getElementById("editProductName").value.trim();
+        const store = document.getElementById("editStoreName").value.trim();
+        const price = parseFloat(document.getElementById("editPrice").value);
+        const memo = document.getElementById("editMemo").value.trim();
+        
+        if (!name || !price) {
+            showToast("商品名と価格を入力してください");
+            return;
+        }
+        
+        let updatedProduct = {
+            name,
+            store,
+            price,
+            memo,
+            category
+        };
+        
+        if (category === "toilet") {
+            const length = parseFloat(document.getElementById("editLength").value) || 0;
+            const multiplier = parseFloat(document.getElementById("editMultiplier").value) || 1;
+            const rolls = parseInt(document.getElementById("editRolls").value, 10) || 0;
+            
+            const totalAmount = length * multiplier * rolls;
+            const pricePerUnit = totalAmount > 0 ? price / totalAmount : 0;
+            
+            updatedProduct = {
+                ...updatedProduct,
+                length,
+                multiplier,
+                rolls,
+                totalAmount,
+                pricePerUnit: parseFloat(pricePerUnit.toFixed(3)),
+                unit: "m"
+            };
+        } else if (category === "tissue") {
+            const pairsPerBox = parseInt(document.getElementById("editPairsPerBox").value, 10) || 0;
+            const boxes = parseInt(document.getElementById("editBoxes").value, 10) || 0;
+            
+            const totalAmount = pairsPerBox * boxes;
+            const pricePerUnit = totalAmount > 0 ? price / totalAmount : 0;
+            
+            updatedProduct = {
+                ...updatedProduct,
+                pairsPerBox,
+                boxes,
+                totalAmount,
+                pricePerUnit: parseFloat(pricePerUnit.toFixed(3)),
+                unit: "組"
+            };
+        }
+        
+        try {
+            await updateProductInFirestore(productId, updatedProduct);
+            
+            // Update local products array
+            const index = products.findIndex(p => p.id === productId);
+            if (index !== -1) {
+                products[index] = { ...products[index], ...updatedProduct };
+            }
+            
+            updateResults();
+            closeEditModal();
+            showToast("更新しました ✓");
+        } catch (e) {
+            showToast("更新に失敗しました");
         }
     });
 });
