@@ -158,11 +158,27 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Check for redirect result (for returning from login)
     try {
+        const isRedirecting = sessionStorage.getItem('authRedirecting');
+        if (isRedirecting) {
+            console.log("Redirect header detected, waiting for auth...");
+            // Ensure login form is hidden
+            if (authLoginForm) authLoginForm.style.display = "none";
+            if (authLoading) authLoading.style.display = "flex";
+        }
+        
         if (getRedirectResult) {
-            await getRedirectResult(auth);
+            console.log("Checking redirect result...");
+            const result = await getRedirectResult(auth);
+            if (result) {
+                console.log("Redirect result user:", result.user.uid);
+            } else {
+                console.log("No redirect result found");
+            }
         }
     } catch (e) {
         console.error('Redirect result error:', e);
+        // If error, likely clear flag to allow manual login
+        sessionStorage.removeItem('authRedirecting');
     }
 
     // DOM Elements
@@ -206,6 +222,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // ===== Authentication =====
     onAuthStateChanged(auth, async (user) => {
+        console.log("AuthStateChanged:", user ? "User logged in: " + user.uid : "No user", new Date().toISOString());
+        
+        // Clear redirect flag as auth state has settled
+        sessionStorage.removeItem('authRedirecting');
+        
         currentUser = user;
         
         // Hide loading, show appropriate state
@@ -400,6 +421,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             
             if (typeof signInWithRedirect === 'function') {
                 // Use redirect for better mobile/GitHub Pages support
+                sessionStorage.setItem('authRedirecting', 'true');
                 await signInWithRedirect(auth, provider);
             } else if (typeof signInWithPopup === 'function') {
                 // Fallback to popup if redirect not available
