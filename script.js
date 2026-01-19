@@ -390,13 +390,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function handleLogin() {
         try {
             // Access dynamically to ensure we get the latest value
-            const { signInWithRedirect, signInWithPopup } = window.firebaseFunctions;
+            const { signInWithRedirect, signInWithPopup, setPersistence } = window.firebaseFunctions;
+            const { browserLocalPersistence } = window.firebasePersistence || {};
+
+            if (setPersistence && browserLocalPersistence) {
+                await setPersistence(auth, browserLocalPersistence);
+                console.log("Persistence set to LOCAL");
+            }
             
             if (typeof signInWithRedirect === 'function') {
                 // Use redirect for better mobile/GitHub Pages support
                 await signInWithRedirect(auth, provider);
             } else if (typeof signInWithPopup === 'function') {
-                // Fallback to popup if redirect not available (shouldn't happen with correct index.html)
+                // Fallback to popup if redirect not available
                 console.warn('signInWithRedirect not found, falling back to popup');
                 await signInWithPopup(auth, provider);
             } else {
