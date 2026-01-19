@@ -237,6 +237,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     showToast(`✅ ${migratedCount}件のデータを移行しました`);
                 } catch (e) {
                     console.error('Migration failed:', e);
+                    // Show detailed error for debugging on mobile
+                    const errorMsg = e.message || e.code || 'Unknown error';
+                    alert(`❌ 移行エラー\n\n${errorMsg}\n\nFirestoreルールを確認してください`);
                     showToast('移行に失敗しました');
                 }
             } else {
