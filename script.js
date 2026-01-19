@@ -1046,6 +1046,6 @@ async function clearProductsByCategoryFromFirestore(category) {
             showToast("更新に失敗しました");
         }
     });
-    ;
-
-
+    };
+    });
+};
