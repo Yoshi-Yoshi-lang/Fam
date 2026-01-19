@@ -154,7 +154,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     const auth = window.firebaseAuth;
     const provider = window.firebaseProvider;
-    const { signInWithPopup, signOut, onAuthStateChanged } = window.firebaseFunctions;
+    const { signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } = window.firebaseFunctions;
+
+    // Check for redirect result (for returning from login)
+    try {
+        await getRedirectResult(auth);
+    } catch (e) {
+        console.error('Redirect result error:', e);
+    }
 
     // DOM Elements
     const form = document.getElementById("inputForm");
@@ -377,9 +384,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Login handlers
+    // Login handlers
     async function handleLogin() {
         try {
-            await signInWithPopup(auth, provider);
+            // Use redirect instead of popup for better mobile/GitHub Pages support
+            await signInWithRedirect(auth, provider);
         } catch (e) {
             console.error('Login failed:', e);
             showToast("ログインに失敗しました");
