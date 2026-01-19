@@ -389,11 +389,22 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Login handlers
     async function handleLogin() {
         try {
-            // Use redirect instead of popup for better mobile/GitHub Pages support
-            await signInWithRedirect(auth, provider);
+            // Access dynamically to ensure we get the latest value
+            const { signInWithRedirect, signInWithPopup } = window.firebaseFunctions;
+            
+            if (typeof signInWithRedirect === 'function') {
+                // Use redirect for better mobile/GitHub Pages support
+                await signInWithRedirect(auth, provider);
+            } else if (typeof signInWithPopup === 'function') {
+                // Fallback to popup if redirect not available (shouldn't happen with correct index.html)
+                console.warn('signInWithRedirect not found, falling back to popup');
+                await signInWithPopup(auth, provider);
+            } else {
+                throw new Error("Login function not found. Please refresh the page.");
+            }
         } catch (e) {
             console.error('Login failed:', e);
-            showToast("ログインに失敗しました");
+            showToast("ログインに失敗しました: " + e.message);
         }
     }
 
