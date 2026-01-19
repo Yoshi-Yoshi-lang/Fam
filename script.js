@@ -206,22 +206,26 @@ document.addEventListener("DOMContentLoaded", async function () {
                         );
                         
                         if (!exists) {
-                            const productData = {
-                                name: product.name || '名称不明',
-                                store: product.store || '',
-                                price: product.price || 0,
-                                memo: product.memo || '',
-                                category: product.category || 'toilet',
-                                registeredAt: product.registeredAt || new Date().toISOString(),
-                                length: product.length,
-                                multiplier: product.multiplier,
-                                rolls: product.rolls,
-                                pairsPerBox: product.pairsPerBox,
-                                boxes: product.boxes,
-                                totalAmount: product.totalAmount,
-                                pricePerUnit: product.pricePerUnit,
-                                unit: product.unit
-                            };
+                            // Build product data, excluding undefined values
+                            const productData = {};
+                            
+                            // Required fields
+                            productData.name = product.name || '名称不明';
+                            productData.store = product.store || '';
+                            productData.price = product.price || 0;
+                            productData.memo = product.memo || '';
+                            productData.category = product.category || 'toilet';
+                            productData.registeredAt = product.registeredAt || new Date().toISOString();
+                            
+                            // Optional fields - only add if defined
+                            if (product.length !== undefined) productData.length = product.length;
+                            if (product.multiplier !== undefined) productData.multiplier = product.multiplier;
+                            if (product.rolls !== undefined) productData.rolls = product.rolls;
+                            if (product.pairsPerBox !== undefined) productData.pairsPerBox = product.pairsPerBox;
+                            if (product.boxes !== undefined) productData.boxes = product.boxes;
+                            if (product.totalAmount !== undefined) productData.totalAmount = product.totalAmount;
+                            if (product.pricePerUnit !== undefined) productData.pricePerUnit = product.pricePerUnit;
+                            if (product.unit !== undefined) productData.unit = product.unit;
                             
                             const docId = await saveProductToFirestore(productData);
                             productData.id = docId;
