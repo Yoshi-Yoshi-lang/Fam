@@ -19,7 +19,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, setDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
         
         const firebaseConfig = {
@@ -40,12 +40,14 @@
         window.firebaseAuth = auth;
         window.firebaseDb = db;
         window.firebaseProvider = provider;
+        window.firebasePersistence = { browserLocalPersistence };
         window.firebaseFunctions = {
             signInWithRedirect,
             signInWithPopup,
             getRedirectResult,
             signOut,
             onAuthStateChanged,
+            setPersistence,
             collection,
             doc,
             getDocs,
@@ -56,7 +58,7 @@
             where,
             writeBatch
         };
-        console.log("Firebase initialized (v10.14.0)");
+        console.log("Firebase initialized (v10.14.0 with persistence)");
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
 </head>
