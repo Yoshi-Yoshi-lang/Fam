@@ -23,7 +23,39 @@ async function loadProductsFromFirestore() {
     try {
         const productsRef = collection(db, 'users', currentUser.uid, 'products');
         const snapshot = await getDocs(productsRef);
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Map and fix any products with missing pricePerUnit
+        return snapshot.docs.map(doc => {
+            const data = { id: doc.id, ...doc.data() };
+            
+            // Fix pricePerUnit if missing or zero
+            if (!data.pricePerUnit || data.pricePerUnit === 0) {
+                // Try pricePerMeter (old field name)
+                if (data.pricePerMeter) {
+                    data.pricePerUnit = data.pricePerMeter;
+                }
+                // Recalculate from price and totalAmount
+                else if (data.price && data.totalAmount && data.totalAmount > 0) {
+                    data.pricePerUnit = parseFloat((data.price / data.totalAmount).toFixed(3));
+                }
+                // Recalculate for toilet paper
+                else if (data.price && data.length && data.multiplier && data.rolls) {
+                    const total = data.length * data.multiplier * data.rolls;
+                    data.pricePerUnit = parseFloat((data.price / total).toFixed(3));
+                    data.totalAmount = total;
+                    data.unit = 'm';
+                }
+                // Recalculate for tissue
+                else if (data.price && data.pairsPerBox && data.boxes) {
+                    const total = data.pairsPerBox * data.boxes;
+                    data.pricePerUnit = parseFloat((data.price / total).toFixed(3));
+                    data.totalAmount = total;
+                    data.unit = '組';
+                }
+            }
+            
+            return data;
+        });
     } catch (e) {
         console.error('Failed to load products:', e);
         return [];
@@ -232,8 +264,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                             if (product.pairsPerBox !== undefined) productData.pairsPerBox = product.pairsPerBox;
                             if (product.boxes !== undefined) productData.boxes = product.boxes;
                             if (product.totalAmount !== undefined) productData.totalAmount = product.totalAmount;
-                            if (product.pricePerUnit !== undefined) productData.pricePerUnit = product.pricePerUnit;
                             if (product.unit !== undefined) productData.unit = product.unit;
+                            
+                            // Handle pricePerUnit - check both old and new field names, or recalculate
+                            if (product.pricePerUnit !== undefined) {
+                                productData.pricePerUnit = product.pricePerUnit;
+                            } else if (product.pricePerMeter !== undefined) {
+                                // Old field name
+                                productData.pricePerUnit = product.pricePerMeter;
+                            } else if (productData.price && productData.totalAmount) {
+                                // Recalculate from price and totalAmount
+                                productData.pricePerUnit = parseFloat((productData.price / productData.totalAmount).toFixed(3));
+                            } else if (productData.price && productData.length && productData.multiplier && productData.rolls) {
+                                // Recalculate for toilet paper
+                                const total = productData.length * productData.multiplier * productData.rolls;
+                                productData.pricePerUnit = parseFloat((productData.price / total).toFixed(3));
+                                productData.totalAmount = total;
+                                productData.unit = 'm';
+                            }
                             
                             const docId = await saveProductToFirestore(productData);
                             productData.id = docId;
