@@ -231,8 +231,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // If we expected a redirect but got nothing, it failed
                 if (isRedirecting) {
                    console.warn("Redirect reported but no result found. Likely environment issue.");
-                   // We don't clear flag here immediately, we let onAuthStateChanged decide, 
-                   // or the timeout above handles it. 
+                   
+                   // Immediately fallback to popup interface
+                   sessionStorage.removeItem('authRedirecting');
+                   if (authLoading) authLoading.style.display = "none";
+                   if (authLoginForm) {
+                       authLoginForm.style.display = "flex";
+                       const loginBtn = document.getElementById("loginBtn");
+                       if (loginBtn) {
+                           loginBtn.style.display = "flex";
+                           loginBtn.textContent = "Googleでログイン (ポップアップ)";
+                       }
+                       showToast("推奨: ポップアップ版でログインしてください");
+                   }
                 }
             }
         }
