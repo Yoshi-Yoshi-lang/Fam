@@ -870,49 +870,68 @@ document.addEventListener("DOMContentLoaded", async function () {
     const editModalSave = document.getElementById("editModalSave");
     
     function openEditModal(product) {
+        if (!editModal) {
+            showToast("編集機能を読み込み中...");
+            return;
+        }
+        
         // Set hidden fields
-        document.getElementById("editProductId").value = product.id;
-        document.getElementById("editProductCategory").value = product.category;
+        const editProductId = document.getElementById("editProductId");
+        const editProductCategory = document.getElementById("editProductCategory");
+        if (editProductId) editProductId.value = product.id;
+        if (editProductCategory) editProductCategory.value = product.category;
         
         // Set common fields
-        document.getElementById("editProductName").value = product.name || '';
-        document.getElementById("editStoreName").value = product.store || '';
-        document.getElementById("editPrice").value = product.price || '';
-        document.getElementById("editMemo").value = product.memo || '';
+        const editProductName = document.getElementById("editProductName");
+        const editStoreNameEl = document.getElementById("editStoreName");
+        const editPrice = document.getElementById("editPrice");
+        const editMemoEl = document.getElementById("editMemo");
+        
+        if (editProductName) editProductName.value = product.name || '';
+        if (editStoreNameEl) editStoreNameEl.value = product.store || '';
+        if (editPrice) editPrice.value = product.price || '';
+        if (editMemoEl) editMemoEl.value = product.memo || '';
         
         // Show/hide category-specific fields
         const editToiletFields = document.getElementById("editToiletFields");
         const editTissueFields = document.getElementById("editTissueFields");
         
         if (product.category === "toilet") {
-            editToiletFields.style.display = "block";
-            editTissueFields.style.display = "none";
-            document.getElementById("editLength").value = product.length || '';
-            document.getElementById("editMultiplier").value = product.multiplier || '';
-            document.getElementById("editRolls").value = product.rolls || '';
+            if (editToiletFields) editToiletFields.style.display = "block";
+            if (editTissueFields) editTissueFields.style.display = "none";
+            const editLength = document.getElementById("editLength");
+            const editMultiplier = document.getElementById("editMultiplier");
+            const editRolls = document.getElementById("editRolls");
+            if (editLength) editLength.value = product.length || '';
+            if (editMultiplier) editMultiplier.value = product.multiplier || '';
+            if (editRolls) editRolls.value = product.rolls || '';
         } else if (product.category === "tissue") {
-            editToiletFields.style.display = "none";
-            editTissueFields.style.display = "block";
-            document.getElementById("editPairsPerBox").value = product.pairsPerBox || '';
-            document.getElementById("editBoxes").value = product.boxes || '';
+            if (editToiletFields) editToiletFields.style.display = "none";
+            if (editTissueFields) editTissueFields.style.display = "block";
+            const editPairsPerBox = document.getElementById("editPairsPerBox");
+            const editBoxes = document.getElementById("editBoxes");
+            if (editPairsPerBox) editPairsPerBox.value = product.pairsPerBox || '';
+            if (editBoxes) editBoxes.value = product.boxes || '';
         }
         
         editModal.classList.add("show");
     }
     
     function closeEditModal() {
-        editModal.classList.remove("show");
+        if (editModal) editModal.classList.remove("show");
     }
     
-    editModalClose.addEventListener("click", closeEditModal);
-    editModalCancel.addEventListener("click", closeEditModal);
-    editModal.addEventListener("click", function(e) {
-        if (e.target === editModal) {
-            closeEditModal();
-        }
-    });
+    if (editModalClose) editModalClose.addEventListener("click", closeEditModal);
+    if (editModalCancel) editModalCancel.addEventListener("click", closeEditModal);
+    if (editModal) {
+        editModal.addEventListener("click", function(e) {
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+    }
     
-    editModalSave.addEventListener("click", async function() {
+    if (editModalSave) editModalSave.addEventListener("click", async function() {
         const productId = document.getElementById("editProductId").value;
         const category = document.getElementById("editProductCategory").value;
         
