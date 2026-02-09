@@ -693,8 +693,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         const price = parseFloat(document.getElementById("price").value);
         const memo = document.getElementById("memo").value.trim();
 
-        if (!productName || !price) {
-            showToast("商品名と価格を入力してください");
+        if (!productName || isNaN(price) || price <= 0) {
+            showToast("商品名と有効な価格を入力してください");
             return;
         }
 
@@ -712,8 +712,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             const multiplier = parseFloat(document.getElementById("multiplier").value) || 1;
             const rolls = parseInt(document.getElementById("rolls").value, 10) || 0;
 
-            if (!length) {
-                showToast("長さを入力してください");
+            if (!length || length <= 0) {
+                showToast("有効な長さを入力してください");
+                return;
+            }
+            if (rolls <= 0) {
+                showToast("有効なロール数を入力してください");
                 return;
             }
 
@@ -732,6 +736,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else if (currentCategory === "tissue") {
             const pairsPerBox = parseInt(document.getElementById("pairsPerBox").value, 10) || 0;
             const boxes = parseInt(document.getElementById("boxes").value, 10) || 0;
+
+            if (pairsPerBox <= 0 || boxes <= 0) {
+                showToast("有効な組数と箱数を入力してください");
+                return;
+            }
 
             const totalPairs = pairsPerBox * boxes;
             const pricePerUnit = price / totalPairs;
@@ -843,34 +852,38 @@ document.addEventListener("DOMContentLoaded", async function () {
             `;
         }).join("");
 
-        // Delete button events
-        document.querySelectorAll(".delete-btn").forEach((button) => {
-            button.addEventListener("click", async function () {
-                const productId = this.getAttribute("data-id");
-                if (confirm("削除しますか？")) {
-                    try {
-                        await deleteProductFromFirestore(productId);
-                        products = products.filter(p => p.id !== productId);
-                        updateResults();
-                        showToast("削除しました");
-                    } catch (e) {
-                        showToast("削除に失敗しました");
-                    }
-                }
-            });
-        });
-
-        // Edit button events
-        document.querySelectorAll(".edit-btn").forEach((button) => {
-            button.addEventListener("click", function () {
-                const productId = this.getAttribute("data-id");
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    openEditModal(product);
-                }
-            });
-        });
     }
+
+    // ===== Event Delegation for Results Cards =====
+    resultsCards.addEventListener('click', async function(e) {
+        // Handle Delete
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const productId = deleteBtn.getAttribute("data-id");
+            if (confirm("削除しますか？")) {
+                try {
+                    await deleteProductFromFirestore(productId);
+                    products = products.filter(p => p.id !== productId);
+                    updateResults();
+                    showToast("削除しました");
+                } catch (e) {
+                    showToast("削除に失敗しました");
+                }
+            }
+            return;
+        }
+
+        // Handle Edit
+        const editBtn = e.target.closest('.edit-btn');
+        if (editBtn) {
+            const productId = editBtn.getAttribute("data-id");
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                openEditModal(product);
+            }
+            return;
+        }
+    });
 
     function getProductStats(product) {
         if (product.category === "toilet") {
@@ -1039,8 +1052,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const price = parseFloat(document.getElementById("editPrice").value);
         const memo = document.getElementById("editMemo").value.trim();
         
-        if (!name || !price) {
-            showToast("商品名と価格を入力してください");
+        if (!name || isNaN(price) || price <= 0) {
+            showToast("商品名と有効な価格を入力してください");
             return;
         }
         
@@ -1056,6 +1069,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             const length = parseFloat(document.getElementById("editLength").value) || 0;
             const multiplier = parseFloat(document.getElementById("editMultiplier").value) || 1;
             const rolls = parseInt(document.getElementById("editRolls").value, 10) || 0;
+
+            if (length <= 0 || rolls <= 0) {
+                showToast("有効な長さとロール数を入力してください");
+                return;
+            }
             
             const totalAmount = length * multiplier * rolls;
             const pricePerUnit = totalAmount > 0 ? price / totalAmount : 0;
@@ -1072,6 +1090,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else if (category === "tissue") {
             const pairsPerBox = parseInt(document.getElementById("editPairsPerBox").value, 10) || 0;
             const boxes = parseInt(document.getElementById("editBoxes").value, 10) || 0;
+
+            if (pairsPerBox <= 0 || boxes <= 0) {
+                showToast("有効な組数と箱数を入力してください");
+                return;
+            }
             
             const totalAmount = pairsPerBox * boxes;
             const pricePerUnit = totalAmount > 0 ? price / totalAmount : 0;
