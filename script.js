@@ -126,26 +126,7 @@ async function updateProductInFirestore(productId, productData) {
     }
 }
 
-async function clearProductsByCategoryFromFirestore(category) {
-    if (!currentUser) return;
-    
-    const { collection, getDocs, doc, deleteDoc, query, where } = window.firebaseFunctions;
-    const db = window.firebaseDb;
-    
-    try {
-        const productsRef = collection(db, 'users', currentUser.uid, 'products');
-        const q = query(productsRef, where('category', '==', category));
-        const snapshot = await getDocs(q);
-        
-        const deletePromises = snapshot.docs.map(docSnap => 
-            deleteDoc(doc(db, 'users', currentUser.uid, 'products', docSnap.id))
-        );
-        await Promise.all(deletePromises);
-    } catch (e) {
-        console.error('Failed to clear products:', e);
-        throw e;
-    }
-}
+
 
 // ===== Main Application =====
 document.addEventListener("DOMContentLoaded", async function () {
@@ -155,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // DOM Elements - Initialize immediately
     const form = document.getElementById("inputForm");
     const resultsCards = document.getElementById("resultsCards");
-    const resetBtn = document.getElementById("resetBtn");
+
     const emptyState = document.getElementById("emptyState");
     const productCount = document.getElementById("productCount");
     const categoryTabs = document.querySelectorAll(".tab-btn");
@@ -938,31 +919,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return div.innerHTML;
     }
 
-    // ===== Reset =====
-    resetBtn.addEventListener("click", async function () {
-        if (!currentUser) {
-            showToast("ログインしてください");
-            return;
-        }
 
-        const count = products.filter(p => p.category === currentCategory).length;
-        if (count === 0) {
-            showToast("削除する商品がありません");
-            return;
-        }
-
-        const categoryName = currentCategory === "toilet" ? "トイレットペーパー" : "ティッシュ";
-        if (confirm(`${categoryName}のデータを全て削除しますか？`)) {
-            try {
-                await clearProductsByCategoryFromFirestore(currentCategory);
-                products = products.filter(p => p.category !== currentCategory);
-                updateResults();
-                showToast("削除しました");
-            } catch (e) {
-                showToast("削除に失敗しました");
-            }
-        }
-    });
 
     // ===== Edit Modal =====
     // Initialize elements lazily to avoid null errors if DOM isn't ready
