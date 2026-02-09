@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resetBtn = document.getElementById("resetBtn");
     const emptyState = document.getElementById("emptyState");
     const productCount = document.getElementById("productCount");
-    const categoryTabs = document.querySelectorAll(".category-tab");
+    const categoryTabs = document.querySelectorAll(".tab-btn");
     const toast = document.getElementById("toast");
     const toastMessage = document.getElementById("toastMessage");
     const storeInput = document.getElementById("storeName");
