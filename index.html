@@ -148,10 +148,10 @@
                 </div>
 
                 <!-- トイレットペーパー用フィールド -->
-                <div class="category-fields toilet-fields">
+                <div class="category-fields toilet-fields" id="toiletFields">
                     <div class="form-section">
                         <label class="form-label">巻きの長さ（m）</label>
-                        <input type="number" id="length" class="glass-input" placeholder="50" step="0.1">
+                        <input type="number" id="length" class="glass-input" placeholder="50" step="0.1" min="0">
                     </div>
 
                     <div class="form-section">
@@ -181,7 +181,7 @@
                 </div>
 
                 <!-- ティッシュ用フィールド -->
-                <div class="category-fields tissue-fields hidden">
+                <div class="category-fields tissue-fields hidden" id="tissueFields">
                     <div class="form-section">
                         <label class="form-label">1箱あたりの組数</label>
                         <div class="pill-selector" id="pairsButtons">
@@ -216,7 +216,7 @@
                     <label class="form-label">価格（円）</label>
                     <div class="price-input-wrapper">
                         <span class="price-symbol">¥</span>
-                        <input type="number" id="price" class="glass-input price-input" placeholder="498" required>
+                        <input type="number" id="price" class="glass-input price-input" placeholder="498" required min="0">
                     </div>
                 </div>
 
@@ -267,7 +267,7 @@
                     <button type="button" class="modal-close" id="modalClose">×</button>
                 </div>
                 <div class="modal-body">
-                    <input type="number" class="glass-input" id="customInput" placeholder="値を入力">
+                    <input type="number" class="glass-input" id="customInput" placeholder="値を入力" min="0">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="modal-btn cancel" id="modalCancel">キャンセル</button>
@@ -299,22 +299,22 @@
                     
                     <div class="form-section">
                         <label class="form-label">価格（円）</label>
-                        <input type="number" id="editPrice" class="glass-input" required>
+                        <input type="number" id="editPrice" class="glass-input" required min="0">
                     </div>
                     
                     <!-- トイレットペーパー用 -->
                     <div id="editToiletFields">
                         <div class="form-section">
                             <label class="form-label">長さ（m）</label>
-                            <input type="number" id="editLength" class="glass-input" step="0.1">
+                            <input type="number" id="editLength" class="glass-input" step="0.1" min="0">
                         </div>
                         <div class="form-section">
                             <label class="form-label">何倍巻き</label>
-                            <input type="number" id="editMultiplier" class="glass-input" step="0.1">
+                            <input type="number" id="editMultiplier" class="glass-input" step="0.1" min="0">
                         </div>
                         <div class="form-section">
                             <label class="form-label">ロール数</label>
-                            <input type="number" id="editRolls" class="glass-input">
+                            <input type="number" id="editRolls" class="glass-input" min="0">
                         </div>
                     </div>
                     
@@ -322,11 +322,11 @@
                     <div id="editTissueFields" style="display: none;">
                         <div class="form-section">
                             <label class="form-label">1箱あたりの組数</label>
-                            <input type="number" id="editPairsPerBox" class="glass-input">
+                            <input type="number" id="editPairsPerBox" class="glass-input" min="0">
                         </div>
                         <div class="form-section">
                             <label class="form-label">箱数</label>
-                            <input type="number" id="editBoxes" class="glass-input">
+                            <input type="number" id="editBoxes" class="glass-input" min="0">
                         </div>
                     </div>
                     
