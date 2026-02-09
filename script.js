@@ -456,20 +456,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("Persistence set to LOCAL");
             }
             
-            if (typeof signInWithRedirect === 'function') {
-                // Use redirect for better mobile/GitHub Pages support
+            // GitHub Pagesやローカル環境での安定性のため、ポップアップ認証を優先使用する
+            if (typeof signInWithPopup === 'function') {
+                await signInWithPopup(auth, provider);
+            } else if (typeof signInWithRedirect === 'function') {
+                // ポップアップが使えない場合のみリダイレクトを使用
                 sessionStorage.setItem('authRedirecting', 'true');
                 await signInWithRedirect(auth, provider);
-            } else if (typeof signInWithPopup === 'function') {
-                // Fallback to popup if redirect not available
-                console.warn('signInWithRedirect not found, falling back to popup');
-                await signInWithPopup(auth, provider);
             } else {
                 throw new Error("Login function not found. Please refresh the page.");
             }
         } catch (e) {
             console.error('Login failed:', e);
-            showToast("ログインに失敗しました: " + e.message);
+            // エラー内容をユーザーに通知（デバッグ用）
+            alert("ログインエラーが発生しました:\n" + e.message);
+            showToast("ログインに失敗しました");
         }
     }
 
